@@ -1,0 +1,86 @@
+<div class="vehicle-list-container">
+  <h1>Vehicle Inventory</h1>
+
+  <div class="controls">
+    <div class="search-container">
+      <label for="search">Search vehicles:</label>
+      <input
+        id="search"
+        type="text"
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="onSearchChange()"
+        placeholder="Search by make, model, color, or year..."
+        class="search-input"
+      />
+    </div>
+
+    <div class="sort-container">
+      <label for="sortField">Sort by:</label>
+      <select
+        id="sortField"
+        [(ngModel)]="sortOptions.field"
+        (ngModelChange)="onSortChange()"
+        class="sort-select"
+      >
+        <option *ngFor="let field of sortFields" [value]="field.value">
+          {{ field.label }}
+        </option>
+      </select>
+      
+      <button
+        (click)="toggleSortDirection()"
+        class="sort-direction-btn"
+        [attr.aria-label]="'Sort ' + (sortOptions.direction === 'asc' ? 'descending' : 'ascending')"
+      >
+        {{ sortOptions.direction === 'asc' ? '↑' : '↓' }}
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    Loading vehicles...
+  </div>
+
+  <div *ngIf="error" class="error">
+    <p>{{ error }}</p>
+    <button (click)="loadVehicles()" class="retry-btn">Retry</button>
+  </div>
+
+  <div *ngIf="!loading && !error" class="vehicles-container">
+    <div *ngIf="filteredVehicles.length === 0" class="no-results">
+      No vehicles found matching your criteria.
+    </div>
+
+    <div class="vehicle-grid">
+      <div
+        *ngFor="let vehicle of filteredVehicles"
+        class="vehicle-card"
+        (click)="viewVehicleDetails(vehicle.id)"
+        role="button"
+        tabindex="0"
+        (keydown.enter)="viewVehicleDetails(vehicle.id)"
+        (keydown.space)="viewVehicleDetails(vehicle.id)"
+      >
+        <div class="vehicle-header">
+          <h3>{{ vehicle.year }} {{ vehicle.make }} {{ vehicle.model }}</h3>
+          <span class="vehicle-price">{{ formatPrice(vehicle.price) }}</span>
+        </div>
+        
+        <div class="vehicle-details">
+          <div class="detail-item">
+            <span class="label">Mileage:</span>
+            <span class="value">{{ formatMileage(vehicle.mileage) }} miles</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Color:</span>
+            <span class="value">{{ vehicle.colour }}</span>
+          </div>
+        </div>
+        
+        <div class="vehicle-actions">
+          <span class="view-details">View Details →</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
